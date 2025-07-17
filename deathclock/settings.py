@@ -27,7 +27,18 @@ SECRET_KEY = 'django-insecure-lp3d2-y5)1lsuw2=9z&z*fbxqiv^vke-+zibga*@ckj-_qa1_m
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost',
-                 'localhost:8000', '.railway.app', '.render.com', '.herokuapp.com']
+                 'localhost:8000', '.railway.app', '.render.com', '.herokuapp.com',
+                 'web-production-714e0.up.railway.app']
+
+# CSRF Settings for Production
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-714e0.up.railway.app',
+    'https://*.railway.app',
+    'https://*.render.com',
+    'https://*.herokuapp.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
 
 # Application definition
