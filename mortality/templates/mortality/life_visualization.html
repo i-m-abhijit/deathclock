@@ -1,0 +1,484 @@
+{% extends 'mortality/base.html' %}
+{% load mortality_filters %}
+
+{% block title %}Your Life Grid - DeathClock{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center mb-4 haunting-title">⚰️ YOUR LIFE GRID ⚰️</h1>
+        <p class="text-center lead mb-3 haunting-subtitle">Each square is one week of your existence.</p>
+        <p class="text-center mb-5 brutal-truth">
+            <span class="text-danger">■ DEAD WEEKS</span> - Gone forever. Never coming back.
+            <br>
+            <span class="text-muted">■ REMAINING WEEKS</span> - Ticking away as you read this.
+        </p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center death-card">
+            <div class="card-body">
+                <h5 class="card-title text-danger">💀 WEEKS DEAD</h5>
+                <div class="mortality-stat death-count">{{ weeks_lived }}</div>
+                <p class="card-text brutal-text">GONE. FOREVER. WASTED.</p>
+                <small class="text-muted">{{ weeks_lived|floatformat:0|div:52|floatformat:1 }} years of your life consumed</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center countdown-card">
+            <div class="card-body">
+                <h5 class="card-title time-remaining">⏳ COUNTDOWN</h5>
+                <div class="mortality-stat countdown-number">{{ weeks_remaining }}</div>
+                <p class="card-text brutal-text">WEEKS UNTIL GAME OVER</p>
+                <small class="text-warning">Tick... Tick... Tick...</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center progress-card">
+            <div class="card-body">
+                <h5 class="card-title">⚰️ LIFE CONSUMED</h5>
+                <div class="mortality-stat consumption-rate">{{ life_percentage|floatformat:1 }}%</div>
+                <p class="card-text brutal-text">OF YOUR EXISTENCE DEVOURED</p>
+                <small class="text-danger">{{ life_percentage|floatformat:1 }}% closer to the grave</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card death-grid-card">
+            <div class="card-header text-center">
+                <h3 class="mb-2 grid-title">💀 THE GRID OF DEATH 💀</h3>
+                <p class="mb-2 grid-subtitle">Every square below is 7 days of your finite existence</p>
+                <div class="grid-legend">
+                    <span class="legend-item dead">
+                        <span class="legend-square dead-square">■</span> 
+                        <strong>{{ weeks_lived }} DEAD WEEKS</strong> - Consumed by time
+                    </span>
+                    <span class="legend-item remaining">
+                        <span class="legend-square remaining-square">■</span> 
+                        <strong>{{ weeks_remaining }} WEEKS LEFT</strong> - Slipping away
+                    </span>
+                </div>
+            </div>
+            <div class="card-body death-grid-body">
+                <div class="mortality-warning mb-3">
+                    <p class="text-center mb-2">
+                        <strong class="text-danger">⚠️ WARNING: This is your actual life disappearing before your eyes ⚠️</strong>
+                    </p>
+                    <p class="text-center brutal-reality">
+                        As you stare at this grid, more squares are turning red. Time doesn't pause for anyone.
+                    </p>
+                </div>
+                
+                <div class="life-grid-container">
+                    <div class="simplified-grid">
+                        <!-- Show years instead of weeks for better performance -->
+                        {% for year in weeks_total|div:52|floatformat:0|make_list %}
+                            {% if forloop.counter0 < weeks_lived|div:52|floatformat:0 %}
+                                <div class="year-square lived-year" 
+                                     title="Year {{ forloop.counter }} - DEAD FOREVER"></div>
+                            {% else %}
+                                <div class="year-square remaining-year" 
+                                     title="Year {{ forloop.counter }} - Future year"></div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p class="text-center mt-3 text-muted">
+                        <small>Each square represents 1 year of your life (52 weeks)</small>
+                    </p>
+                </div>
+                
+                <div class="grid-stats mt-4">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <div class="stat-number text-danger">{{ weeks_lived|div:52|floatformat:1 }}</div>
+                                <div class="stat-label">Years Devoured</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <div class="stat-number text-warning">{{ weeks_remaining|div:52|floatformat:1 }}</div>
+                                <div class="stat-label">Years Remaining</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <div class="stat-number text-info">{{ weeks_remaining|div:52|div:12|floatformat:1 }}</div>
+                                <div class="stat-label">Decades Left</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <div class="stat-number text-muted" id="seconds-left">0</div>
+                                <div class="stat-label">Seconds Remaining</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="brutal-facts mt-4">
+                    <div class="alert alert-danger">
+                        <h6 class="text-center mb-3">💀 BRUTAL REALITY CHECK 💀</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li>⚰️ <strong>{{ weeks_lived|div:52|floatformat:0 }} years</strong> of your life are GONE</li>
+                                    <li>💀 <strong>{{ weeks_lived|div:52|mul:365|floatformat:0 }} days</strong> you'll NEVER get back</li>
+                                    <li>⏰ <strong>{{ weeks_lived|div:52|mul:365|mul:24|floatformat:0 }} hours</strong> consumed by time</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li>🎄 Only <strong>{{ weeks_remaining|div:52|floatformat:0 }} Christmases</strong> left</li>
+                                    <li>🎂 Only <strong>{{ weeks_remaining|div:52|floatformat:0 }} birthdays</strong> remaining</li>
+                                    <li>☀️ Only <strong>{{ weeks_remaining|div:7|floatformat:0 }} Sundays</strong> to wake up</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>💀 Sobering Statistics</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">🏠 <strong>{{ weeks_remaining|floatformat:0 }} weekends</strong> left at home</li>
+                    <li class="mb-2">🌅 <strong>{{ weeks_remaining|floatformat:0 }} Sunday mornings</strong> remaining</li>
+                    <li class="mb-2">🎄 <strong>{{ weeks_remaining|floatformat:0|div:52|floatformat:0 }} Christmases</strong> left to celebrate</li>
+                    <li class="mb-2">🎂 <strong>{{ weeks_remaining|floatformat:0|div:52|floatformat:0 }} birthdays</strong> remaining</li>
+                    <li class="mb-2">🌸 <strong>{{ weeks_remaining|floatformat:0|div:52|floatformat:0 }} springs</strong> left to see</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>⚡ Take Action</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <h6>🎯 What will you do with your remaining {{ weeks_remaining|floatformat:0 }} weeks?</h6>
+                </div>
+                <ul class="list-unstyled">
+                    <li class="mb-2">✅ Stop wasting time on meaningless activities</li>
+                    <li class="mb-2">✅ Pursue your most important goals</li>
+                    <li class="mb-2">✅ Strengthen relationships that matter</li>
+                    <li class="mb-2">✅ Create something meaningful</li>
+                    <li class="mb-2">✅ Take care of your health</li>
+                    <li class="mb-2">✅ Experience what you've always wanted</li>
+                </ul>
+                <div class="d-grid">
+                    <a href="{% url 'mortality_reflection' %}" class="btn btn-info">Reflect on Your Mortality</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Haunting Typography */
+.haunting-title {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #ff1a1a !important;
+    letter-spacing: 2px;
+}
+
+.haunting-subtitle {
+    font-size: 1.3rem;
+    color: #ff6666;
+}
+
+.brutal-truth {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* Death Cards - Simplified */
+.death-card, .countdown-card, .progress-card {
+    background: rgba(26, 0, 0, 0.8) !important;
+    border: 2px solid #660000 !important;
+}
+
+.death-count {
+    color: #ff0000 !important;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+}
+
+.countdown-number {
+    color: #ff6600 !important;
+    text-shadow: 0 0 10px rgba(255, 102, 0, 0.8);
+}
+
+.consumption-rate {
+    color: #cc0000 !important;
+    text-shadow: 0 0 10px rgba(204, 0, 0, 0.8);
+}
+
+.brutal-text {
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #ff3333 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Death Grid */
+.death-grid-card {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%) !important;
+    border: 3px solid #800000 !important;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
+}
+
+.grid-title {
+    font-size: 2.5rem;
+    color: #ff0000 !important;
+    text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+}
+
+.grid-subtitle {
+    color: #ff6666;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.grid-legend {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 15px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+}
+
+.legend-square {
+    font-size: 1.5rem;
+}
+
+.dead-square {
+    color: #ff0000;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+}
+
+.remaining-square {
+    color: #666666;
+    text-shadow: 0 0 5px rgba(102, 102, 102, 0.5);
+}
+
+/* Life Grid Container - Optimized */
+.life-grid-container {
+    background: #000000;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #330000;
+    box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.2);
+}
+
+.simplified-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+    max-width: 100%;
+    background: #000000;
+    padding: 15px;
+    border-radius: 5px;
+    justify-items: center;
+}
+
+.year-square {
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.lived-year {
+    background-color: #ff0000 !important;
+    color: white;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+}
+
+.remaining-year {
+    background-color: #333333 !important;
+    color: #999;
+    border: 1px solid #555;
+}
+
+.year-square:hover {
+    transform: scale(1.2);
+}
+
+.lived-year:hover {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 1);
+}
+
+.remaining-year:hover {
+    background-color: #555555 !important;
+}
+
+/* Statistics */
+.stat-box {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    margin-bottom: 10px;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 900;
+    text-shadow: 0 0 8px currentColor;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #ccc;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Brutal Reality */
+.mortality-warning {
+    background: linear-gradient(135deg, #330000 0%, #660000 100%);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #ff0000;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+}
+
+.brutal-reality {
+    color: #ff9999;
+    font-style: italic;
+    font-size: 1.1rem;
+}
+
+.brutal-facts .alert-danger {
+    background: linear-gradient(135deg, #1a0000 0%, #330000 100%) !important;
+    border: 2px solid #ff0000 !important;
+    color: #ff6666 !important;
+}
+
+/* Simplified Animations - Performance Optimized */
+@keyframes pulse-death {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+@keyframes death-glow {
+    0% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.6); }
+    100% { text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .haunting-grid {
+        grid-template-columns: repeat(26, 1fr);
+    }
+    
+    .haunting-title {
+        font-size: 2rem;
+    }
+    
+    .grid-legend {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .week-square {
+        width: 8px;
+        height: 8px;
+    }
+}
+
+/* Scrollbar Styling */
+.life-grid-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.life-grid-container::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+.life-grid-container::-webkit-scrollbar-thumb {
+    background: #ff0000;
+    border-radius: 4px;
+}
+
+.life-grid-container::-webkit-scrollbar-thumb:hover {
+    background: #ff3333;
+}
+</style>
+
+<script>
+// Optimized Life Grid JavaScript - Performance First
+document.addEventListener('DOMContentLoaded', function() {
+    const weeksLived = {{ weeks_lived }};
+    const weeksRemaining = {{ weeks_remaining }};
+    
+    // Live countdown timer showing seconds ticking away
+    const secondsElement = document.getElementById('seconds-left');
+    if (secondsElement) {
+        let secondsRemaining = weeksRemaining * 7 * 24 * 60 * 60;
+        
+        function updateCountdown() {
+            if (secondsRemaining > 0) {
+                secondsRemaining--;
+                secondsElement.textContent = secondsRemaining.toLocaleString();
+                // Change color every few seconds for visual impact
+                if (secondsRemaining % 5 === 0) {
+                    secondsElement.style.color = '#ff0000';
+                    setTimeout(() => {
+                        secondsElement.style.color = '#ff6666';
+                    }, 200);
+                }
+            }
+        }
+        
+        // Update every second to show life ticking away
+        setInterval(updateCountdown, 1000);
+        secondsElement.textContent = secondsRemaining.toLocaleString();
+    }
+    
+    // Simple hover tooltips for year squares
+    document.querySelectorAll('.year-square').forEach((square, index) => {
+        const yearNum = index + 1;
+        const isLived = index < (weeksLived / 52);
+        
+        if (isLived) {
+            square.title = `Year ${yearNum} - DEAD FOREVER`;
+        } else {
+            const yearsUntilDeath = yearNum - Math.floor(weeksLived / 52);
+            square.title = `Year ${yearNum} - ${yearsUntilDeath} years until this dies too`;
+        }
+    });
+});
+</script>
+{% endblock %}

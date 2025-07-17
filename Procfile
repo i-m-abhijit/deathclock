@@ -1,0 +1,1 @@
+web: gunicorn deathclock.wsgi --log-file -

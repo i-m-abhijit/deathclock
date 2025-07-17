@@ -1,0 +1,87 @@
+{% extends 'mortality/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="text-center mb-5">
+            <h1 class="display-3 mb-4" style="color: #ff4444;">⚰️ DEATH CLOCK ⚰️</h1>
+            <p class="lead mb-4">Every second you waste is a second closer to your grave.</p>
+            <p class="h4 mb-4">Time is the only currency that matters. How are you spending yours?</p>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">⏰ Seconds Ticking</h5>
+                        <div class="mortality-stat" id="seconds-counter">0</div>
+                        <p class="card-text">Seconds since you loaded this page</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">💀 Global Deaths Today</h5>
+                        <div class="mortality-stat" id="deaths-counter">150,000+</div>
+                        <p class="card-text">People who ran out of time today</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">📱 Average Screen Time</h5>
+                        <div class="mortality-stat">7.5h</div>
+                        <p class="card-text">Daily life wasted on devices</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-5">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">Harsh Truths About Your Mortality</h3>
+                <ul class="list-unstyled">
+                    <li class="mb-3">💀 <strong>You have approximately 700,000 hours to live.</strong> How many have you already wasted?</li>
+                    <li class="mb-3">⏳ <strong>The average person spends 5 years waiting in lines.</strong> 5 years of pure nothingness.</li>
+                    <li class="mb-3">📺 <strong>You'll spend 7 years watching TV.</strong> 7 years of your finite existence watching other people live.</li>
+                    <li class="mb-3">😴 <strong>You'll sleep for 25 years.</strong> A third of your life unconscious.</li>
+                    <li class="mb-3">🚗 <strong>You'll spend 5 years commuting.</strong> Sitting in traffic while life passes by.</li>
+                    <li class="mb-3">💼 <strong>You'll work for 40+ years.</strong> Trading your life for money to buy things you don't need.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="text-center">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn btn-danger btn-lg mb-3">Face Your Reality</a>
+            {% else %}
+                <a href="{% url 'account_signup' %}" class="btn btn-danger btn-lg mb-3">Start Your Death Clock</a>
+                <p class="text-muted">Already have an account? <a href="{% url 'account_login' %}" class="text-light">Login</a></p>
+            {% endif %}
+        </div>
+
+        <div class="alert alert-warning mt-4">
+            <h5>⚠️ Warning: This application is designed to confront you with uncomfortable truths.</h5>
+            <p class="mb-0">If you're not ready to face your mortality and make real changes in your life, this isn't for you. This tool will show you exactly how much time you're wasting and how little time you have left.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Seconds counter
+    let seconds = 0;
+    setInterval(() => {
+        seconds++;
+        document.getElementById('seconds-counter').textContent = seconds.toLocaleString();
+    }, 1000);
+
+    // Simulate increasing death counter
+    let deaths = 150000;
+    setInterval(() => {
+        deaths += Math.floor(Math.random() * 3) + 1;
+        document.getElementById('deaths-counter').textContent = deaths.toLocaleString() + '+';
+    }, 5000);
+</script>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends 'mortality/base.html' %}
+
+{% block title %}Your Mortality Dashboard - DeathClock{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center mb-4">Your Mortality Dashboard</h1>
+        <p class="text-center lead mb-5">The brutal truth about your remaining time</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">⏰ Age</h5>
+                <div class="mortality-stat">{{ age }}</div>
+                <p class="card-text">Years survived</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">📅 Days Lived</h5>
+                <div class="mortality-stat">{{ days_lived|floatformat:0 }}</div>
+                <p class="card-text">Days you'll never get back</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title time-remaining">⏳ Days Left</h5>
+                <div class="mortality-stat time-remaining">{{ days_remaining|floatformat:0 }}</div>
+                <p class="card-text">Days until game over</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">📊 Life Progress</h5>
+                <div class="mortality-stat">{{ life_percentage }}%</div>
+                <p class="card-text">Life already consumed</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>⚰️ Life Progress Bar</h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3" style="height: 30px;">
+                    <div class="progress-bar bg-danger" role="progressbar" 
+                         style="width: {{ life_percentage }}%;" 
+                         aria-valuenow="{{ life_percentage }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        {{ life_percentage }}% GONE
+                    </div>
+                </div>
+                <p class="text-center">
+                    <strong>{{ weeks_remaining|floatformat:0 }} weeks remaining</strong><br>
+                    <small class="text-muted">That's {{ weeks_remaining|floatformat:0 }} weekends left to live</small><br>
+                    <small class="text-info">Calculated life expectancy: {{ profile.life_expectancy|floatformat:1 }} years</small>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>⏰ Daily Time Waste</h5>
+            </div>
+            <div class="card-body">
+                <div class="mortality-stat time-wasted">{{ total_daily_waste|floatformat:1 }}h</div>
+                <p>Hours wasted per day</p>
+                <p><strong>Lifetime waste: {{ lifetime_waste_days|floatformat:1 }} days</strong></p>
+                <p class="text-muted">That's {{ lifetime_waste_days|floatformat:1 }} days of your precious life thrown away.</p>
+                <a href="{% url 'time_waste_tracker' %}" class="btn btn-warning btn-sm">Track More Waste</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if time_wastes %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>💸 Your Time Waste Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Hours/Day</th>
+                                <th>Lifetime Days Wasted</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for waste in time_wastes %}
+                            <tr>
+                                <td>{{ waste.category.name }}</td>
+                                <td class="time-wasted">{{ waste.hours_per_day }}h</td>
+                                <td class="time-wasted">{{ waste.days_wasted_lifetime|floatformat:1 }} days</td>
+                                <td>{{ waste.notes|truncatechars:50 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>💭 Recent Reflections</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_reflections %}
+                    {% for reflection in recent_reflections %}
+                        <div class="mb-3 p-3" style="background: rgba(255, 255, 255, 0.1); border-radius: 5px;">
+                            <p class="mb-1">{{ reflection.reflection_text|truncatechars:100 }}</p>
+                            <small class="text-muted">{{ reflection.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No reflections yet. Start thinking about your mortality.</p>
+                {% endif %}
+                <a href="{% url 'mortality_reflection' %}" class="btn btn-info btn-sm">Add Reflection</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>🎯 Mortality Reminders</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">💀 You lose 30 minutes of life expectancy for every hour of TV</li>
+                    <li class="mb-2">⏰ The average person checks their phone 96 times per day</li>
+                    <li class="mb-2">🚬 Each cigarette costs you 11 minutes of life</li>
+                    <li class="mb-2">😴 Sleeping in past 7 AM reduces your productive hours</li>
+                    <li class="mb-2">📱 Social media steals 2.5 hours of your day</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center">
+    <a href="{% url 'life_visualization' %}" class="btn btn-danger btn-lg">View Your Life Grid</a>
+</div>
+{% endblock %}
