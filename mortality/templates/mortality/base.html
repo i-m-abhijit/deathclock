@@ -118,6 +118,9 @@
                             <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{% url 'social_feed' %}">💀 Social</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'time_waste_tracker' %}">Time Waste</a>
                         </li>
                         <li class="nav-item">
@@ -125,6 +128,17 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'life_visualization' %}">Life Grid</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="socialDropdown" role="button" data-bs-toggle="dropdown">
+                                Community
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'mortality_challenges' %}">🎯 Challenges</a></li>
+                                <li><a class="dropdown-item" href="{% url 'mortality_leaderboard' %}">🏆 Leaderboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'anonymous_confessions' %}">😔 Confessions</a></li>
+                                <li><a class="dropdown-item" href="{% url 'mortality_stats' %}">📊 Stats</a></li>
+                            </ul>
                         </li>
                     {% endif %}
                 </ul>

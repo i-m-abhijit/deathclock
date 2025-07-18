@@ -1,0 +1,143 @@
+{% extends 'mortality/base.html' %}
+
+{% block title %}Share Your Mortality Journey - DeathClock{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header text-center">
+                <h3>📝 Share Your Mortality Journey</h3>
+                <p class="mb-0">Connect with others confronting their finite existence</p>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="post_type" class="form-label">Type of Post</label>
+                        <select name="post_type" id="post_type" class="form-control" required>
+                            <option value="">Choose your post type...</option>
+                            <option value="reflection">🤔 Mortality Reflection</option>
+                            <option value="achievement">🎯 Life Achievement</option>
+                            <option value="confession">😔 Anonymous Confession</option>
+                            <option value="milestone">🏆 Life Milestone</option>
+                            <option value="wake_up_call">⚡ Wake Up Call</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" name="title" id="title" class="form-control" 
+                               placeholder="Give your post a compelling title..." required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Your Story</label>
+                        <textarea name="content" id="content" class="form-control" rows="8" 
+                                  placeholder="Share your thoughts about mortality, time, life, death, or your journey..." required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="is_anonymous" id="is_anonymous" class="form-check-input" checked>
+                            <label class="form-check-label" for="is_anonymous">
+                                Post anonymously (recommended)
+                            </label>
+                        </div>
+                        <small class="text-muted">Anonymous posts use a generated username to protect your identity</small>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-danger btn-lg">Share with Community</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>💡 Post Ideas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>🤔 Reflections:</h6>
+                        <ul class="list-unstyled small">
+                            <li>• What would you do with one year left?</li>
+                            <li>• Your biggest regrets about wasted time</li>
+                            <li>• How mortality awareness changed you</li>
+                            <li>• Lessons learned from tracking time waste</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>🎯 Achievements:</h6>
+                        <ul class="list-unstyled small">
+                            <li>• Reduced daily time waste by X hours</li>
+                            <li>• Completed a meaningful project</li>
+                            <li>• Strengthened important relationships</li>
+                            <li>• Overcame a fear or limitation</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>😔 Confessions:</h6>
+                        <ul class="list-unstyled small">
+                            <li>• Time you wish you could get back</li>
+                            <li>• Things you're avoiding due to fear</li>
+                            <li>• Relationships you've neglected</li>
+                            <li>• Dreams you've abandoned</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>⚡ Wake Up Calls:</h6>
+                        <ul class="list-unstyled small">
+                            <li>• Moments that made you realize mortality</li>
+                            <li>• Statistics that shocked you</li>
+                            <li>• Advice for people wasting time</li>
+                            <li>• Urgent reminders about life's brevity</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Dynamic placeholder text based on post type
+document.getElementById('post_type').addEventListener('change', function() {
+    const contentTextarea = document.getElementById('content');
+    const titleInput = document.getElementById('title');
+    
+    const placeholders = {
+        'reflection': {
+            title: 'My reflection on mortality and time...',
+            content: 'Share your deep thoughts about life, death, time, and what it all means to you...'
+        },
+        'achievement': {
+            title: 'I accomplished something meaningful...',
+            content: 'Describe what you achieved and how it relates to making the most of your limited time...'
+        },
+        'confession': {
+            title: 'Something I need to confess about my life...',
+            content: 'Share anonymously about regrets, wasted time, or things you wish you could change...'
+        },
+        'milestone': {
+            title: 'I reached an important life milestone...',
+            content: 'Tell us about a significant moment in your life journey and what it means for your mortality...'
+        },
+        'wake_up_call': {
+            title: 'A brutal truth everyone needs to hear...',
+            content: 'Share something that will wake people up to the reality of their finite existence...'
+        }
+    };
+    
+    if (placeholders[this.value]) {
+        titleInput.placeholder = placeholders[this.value].title;
+        contentTextarea.placeholder = placeholders[this.value].content;
+    }
+});
+</script>
+{% endblock %}

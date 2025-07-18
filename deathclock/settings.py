@@ -40,6 +40,18 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
 ]
 
+# Force HTTPS in production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_TLS = True
+    # Force HTTPS for OAuth callbacks
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+    # Additional HTTPS enforcement
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
 
 # Application definition
 
@@ -179,6 +191,10 @@ ACCOUNT_SESSION_REMEMBER = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# Force HTTPS for social auth in production
+SOCIALACCOUNT_ADAPTER = 'mortality.adapters.CustomSocialAccountAdapter'
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
 # Google OAuth2 settings
 SOCIALACCOUNT_PROVIDERS = {

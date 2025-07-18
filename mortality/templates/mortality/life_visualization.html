@@ -77,20 +77,22 @@
                 </div>
                 
                 <div class="life-grid-container">
-                    <div class="simplified-grid">
-                        <!-- Show years instead of weeks for better performance -->
-                        {% for year in weeks_total|div:52|floatformat:0|make_list %}
-                            {% if forloop.counter0 < weeks_lived|div:52|floatformat:0 %}
-                                <div class="year-square lived-year" 
-                                     title="Year {{ forloop.counter }} - DEAD FOREVER"></div>
+                    <div class="weeks-grid">
+                        <!-- Show actual weeks for maximum impact -->
+                        {% for week in weeks_total|make_list %}
+                            {% if forloop.counter0 < weeks_lived %}
+                                <div class="week-square lived-week" 
+                                     data-week="{{ forloop.counter }}"
+                                     title="Week {{ forloop.counter }} - DEAD FOREVER"></div>
                             {% else %}
-                                <div class="year-square remaining-year" 
-                                     title="Year {{ forloop.counter }} - Future year"></div>
+                                <div class="week-square remaining-week" 
+                                     data-week="{{ forloop.counter }}"
+                                     title="Week {{ forloop.counter }} - {{ forloop.counter|sub:weeks_lived }} weeks until this dies too"></div>
                             {% endif %}
                         {% endfor %}
                     </div>
                     <p class="text-center mt-3 text-muted">
-                        <small>Each square represents 1 year of your life (52 weeks)</small>
+                        <small>Each square represents 1 week of your life. {{ weeks_total }} total weeks in your existence.</small>
                     </p>
                 </div>
                 
@@ -294,52 +296,48 @@
     box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.2);
 }
 
-.simplified-grid {
+.weeks-grid {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(52, 1fr);
+    gap: 1px;
     max-width: 100%;
     background: #000000;
-    padding: 15px;
+    padding: 10px;
     border-radius: 5px;
-    justify-items: center;
+    overflow-x: auto;
 }
 
-.year-square {
-    width: 30px;
-    height: 30px;
-    border-radius: 3px;
-    cursor: pointer;
+.week-square {
+    width: 8px;
+    height: 8px;
+    border-radius: 1px;
+    cursor: crosshair;
     transition: transform 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: bold;
 }
 
-.lived-year {
+.lived-week {
     background-color: #ff0000 !important;
-    color: white;
-    box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+    box-shadow: 0 0 2px rgba(255, 0, 0, 0.8);
 }
 
-.remaining-year {
+.remaining-week {
     background-color: #333333 !important;
-    color: #999;
-    border: 1px solid #555;
+    box-shadow: 0 0 1px rgba(51, 51, 51, 0.5);
 }
 
-.year-square:hover {
-    transform: scale(1.2);
+.week-square:hover {
+    transform: scale(2);
+    z-index: 10;
+    position: relative;
 }
 
-.lived-year:hover {
-    box-shadow: 0 0 10px rgba(255, 0, 0, 1);
+.lived-week:hover {
+    box-shadow: 0 0 8px rgba(255, 0, 0, 1);
 }
 
-.remaining-year:hover {
-    background-color: #555555 !important;
+.remaining-week:hover {
+    background-color: #ff6600 !important;
+    box-shadow: 0 0 5px rgba(255, 102, 0, 0.8);
 }
 
 /* Statistics */
@@ -467,16 +465,18 @@ document.addEventListener('DOMContentLoaded', function() {
         secondsElement.textContent = secondsRemaining.toLocaleString();
     }
     
-    // Simple hover tooltips for year squares
-    document.querySelectorAll('.year-square').forEach((square, index) => {
-        const yearNum = index + 1;
-        const isLived = index < (weeksLived / 52);
+    // Enhanced tooltips for week squares
+    document.querySelectorAll('.week-square').forEach((square, index) => {
+        const weekNum = index + 1;
+        const yearNum = Math.ceil(weekNum / 52);
+        const weekInYear = weekNum % 52 || 52;
+        const isLived = index < weeksLived;
         
         if (isLived) {
-            square.title = `Year ${yearNum} - DEAD FOREVER`;
+            square.title = `Week ${weekNum} (Year ${yearNum}, Week ${weekInYear}) - DEAD FOREVER\nThis week of your life is gone. You were ${Math.floor((weekNum-1)/52)} years old.`;
         } else {
-            const yearsUntilDeath = yearNum - Math.floor(weeksLived / 52);
-            square.title = `Year ${yearNum} - ${yearsUntilDeath} years until this dies too`;
+            const weeksUntilDeath = weekNum - weeksLived;
+            square.title = `Week ${weekNum} (Year ${yearNum}, Week ${weekInYear}) - ${weeksUntilDeath} weeks until this dies too\nYou'll be ${Math.floor((weekNum-1)/52)} years old when this week arrives.`;
         }
     });
 });

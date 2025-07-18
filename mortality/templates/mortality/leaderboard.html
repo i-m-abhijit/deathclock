@@ -1,0 +1,209 @@
+{% extends 'mortality/base.html' %}
+
+{% block title %}Mortality Leaderboard - DeathClock{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center mb-4">🏆 Mortality Leaderboard</h1>
+        <p class="text-center lead mb-5">See who's making the most of their finite time</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>⏰ Least Time Wasted</h5>
+                <small class="text-muted">Week ending {{ week_ending }}</small>
+            </div>
+            <div class="card-body">
+                {% for entry in leaderboards.least_waste %}
+                <div class="d-flex justify-content-between align-items-center mb-3 leaderboard-entry">
+                    <div class="d-flex align-items-center">
+                        <div class="rank-badge me-3">
+                            {% if entry.rank == 1 %}🥇
+                            {% elif entry.rank == 2 %}🥈
+                            {% elif entry.rank == 3 %}🥉
+                            {% else %}{{ entry.rank }}{% endif %}
+                        </div>
+                        <div>
+                            <strong>{{ entry.user.userprofile.generate_anonymous_username }}</strong>
+                            <br>
+                            <small class="text-muted">{{ entry.user.userprofile.age }} years old</small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="score">{{ entry.score }}</div>
+                        <small class="text-muted">hours saved</small>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-muted">
+                    <p>No data yet this week</p>
+                    <p>Start tracking your time waste to appear here!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>🎯 Most Productive</h5>
+                <small class="text-muted">Week ending {{ week_ending }}</small>
+            </div>
+            <div class="card-body">
+                {% for entry in leaderboards.most_productive %}
+                <div class="d-flex justify-content-between align-items-center mb-3 leaderboard-entry">
+                    <div class="d-flex align-items-center">
+                        <div class="rank-badge me-3">
+                            {% if entry.rank == 1 %}🥇
+                            {% elif entry.rank == 2 %}🥈
+                            {% elif entry.rank == 3 %}🥉
+                            {% else %}{{ entry.rank }}{% endif %}
+                        </div>
+                        <div>
+                            <strong>{{ entry.user.userprofile.generate_anonymous_username }}</strong>
+                            <br>
+                            <small class="text-muted">{{ entry.user.userprofile.age }} years old</small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="score">{{ entry.score }}</div>
+                        <small class="text-muted">productivity points</small>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-muted">
+                    <p>No data yet this week</p>
+                    <p>Complete challenges to appear here!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>💀 Mortality Motivation</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="motivation-stat">
+                            <div class="stat-number text-danger">{{ leaderboards.least_waste|length }}</div>
+                            <div class="stat-label">Time Reclaimers</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="motivation-stat">
+                            <div class="stat-number text-success">{{ leaderboards.most_productive|length }}</div>
+                            <div class="stat-label">Productivity Masters</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="motivation-stat">
+                            <div class="stat-number text-info">{{ week_ending|date:"W" }}</div>
+                            <div class="stat-label">Week of Year</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <h6 class="text-warning">⚠️ Reality Check</h6>
+                    <p class="mb-2">These people are making the most of their finite time.</p>
+                    <p class="mb-2">While others waste hours on meaningless activities, they're reclaiming their lives.</p>
+                    <p class="text-danger"><strong>What are you doing with YOUR remaining time?</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>🎯 How to Get on the Leaderboard</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>⏰ Reduce Time Waste:</h6>
+                        <ul class="list-unstyled">
+                            <li>• Track your daily time waste</li>
+                            <li>• Eliminate biggest time drains</li>
+                            <li>• Join time waste reduction challenges</li>
+                            <li>• Report weekly improvements</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>🎯 Increase Productivity:</h6>
+                        <ul class="list-unstyled">
+                            <li>• Complete mortality challenges</li>
+                            <li>• Share meaningful achievements</li>
+                            <li>• Help others in the community</li>
+                            <li>• Maintain consistent progress</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="{% url 'mortality_challenges' %}" class="btn btn-danger me-2">Join Challenges</a>
+                    <a href="{% url 'time_waste_tracker' %}" class="btn btn-warning me-2">Track Time Waste</a>
+                    <a href="{% url 'social_feed' %}" class="btn btn-info">Share Progress</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.leaderboard-entry {
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.leaderboard-entry:hover {
+    background: rgba(255, 68, 68, 0.1);
+    transform: translateX(5px);
+}
+
+.rank-badge {
+    font-size: 1.5rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+.score {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff4444;
+}
+
+.motivation-stat {
+    padding: 20px;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 0 0 8px currentColor;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #ccc;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+</style>
+{% endblock %}

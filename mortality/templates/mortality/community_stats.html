@@ -1,0 +1,194 @@
+{% extends 'mortality/base.html' %}
+{% load mortality_filters %}
+
+{% block title %}Community Mortality Stats - DeathClock{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center mb-4">📊 Community Mortality Statistics</h1>
+        <p class="text-center lead mb-5">See how our community is confronting mortality together</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center stats-card">
+            <div class="card-body">
+                <h5 class="card-title">👥 Total Souls</h5>
+                <div class="mortality-stat">{{ total_users }}</div>
+                <p class="card-text">People confronting mortality</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center stats-card">
+            <div class="card-body">
+                <h5 class="card-title">⏰ Avg Life Expectancy</h5>
+                <div class="mortality-stat">{{ avg_life_expectancy }}</div>
+                <p class="card-text">Years remaining on average</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center stats-card">
+            <div class="card-body">
+                <h5 class="card-title">💸 Time Wasted Daily</h5>
+                <div class="mortality-stat time-wasted">{{ total_time_wasted }}</div>
+                <p class="card-text">Hours wasted per day collectively</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center stats-card">
+            <div class="card-body">
+                <h5 class="card-title">📅 Days Lost</h5>
+                <div class="mortality-stat time-wasted">{{ total_time_wasted|floatformat:0|div:24|floatformat:1 }}</div>
+                <p class="card-text">Full days wasted daily by community</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>👥 Age Distribution</h5>
+            </div>
+            <div class="card-body">
+                {% for group in age_groups %}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <strong>{{ group.age_group }}s</strong>
+                        <small class="text-muted">({{ group.age_group }}-{{ group.age_group|add:9 }} years old)</small>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="progress me-2" style="width: 100px; height: 8px;">
+                            <div class="progress-bar bg-danger" role="progressbar" 
+                                 style="width: {{ group.count|mul:100|div:total_users }}%;"></div>
+                        </div>
+                        <span class="badge bg-secondary">{{ group.count }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No age data available</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>💀 Mortality Insights</h5>
+            </div>
+            <div class="card-body">
+                <div class="insight-item mb-3">
+                    <h6 class="text-danger">⚠️ Collective Time Waste</h6>
+                    <p class="mb-1">Our community wastes <strong>{{ total_time_wasted|floatformat:1 }} hours daily</strong></p>
+                    <p class="small text-muted">That's {{ total_time_wasted|mul:365|div:24|floatformat:0 }} full days per year thrown away</p>
+                </div>
+                
+                <div class="insight-item mb-3">
+                    <h6 class="text-warning">📊 Average Mortality</h6>
+                    <p class="mb-1">Average life expectancy: <strong>{{ avg_life_expectancy }} years</strong></p>
+                    <p class="small text-muted">That's about {{ avg_life_expectancy|mul:365|floatformat:0 }} days or {{ avg_life_expectancy|mul:52|floatformat:0 }} weeks total</p>
+                </div>
+                
+                <div class="insight-item">
+                    <h6 class="text-info">🎯 Community Impact</h6>
+                    <p class="mb-1"><strong>{{ total_users }}</strong> people are now aware of their mortality</p>
+                    <p class="small text-muted">Together, we're reclaiming thousands of hours from the void</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>🔥 Community Challenge</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h4 class="text-danger mb-3">Collective Mortality Goal</h4>
+                    <p class="lead mb-4">If every member reduced their daily time waste by just <strong>1 hour</strong>:</p>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="goal-stat">
+                                <div class="stat-number text-success">{{ total_users }}</div>
+                                <div class="stat-label">Hours Saved Daily</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="goal-stat">
+                                <div class="stat-number text-success">{{ total_users|mul:365|floatformat:0 }}</div>
+                                <div class="stat-label">Hours Saved Yearly</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="goal-stat">
+                                <div class="stat-number text-success">{{ total_users|mul:365|div:24|floatformat:0 }}</div>
+                                <div class="stat-label">Full Days Reclaimed</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <p class="text-warning"><strong>That's {{ total_users|mul:365|div:24|div:365|floatformat:1 }} years of collective life reclaimed!</strong></p>
+                        <p class="text-muted">Every hour you save is an hour stolen back from death.</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'mortality_challenges' %}" class="btn btn-danger btn-lg me-2">Join the Movement</a>
+                        <a href="{% url 'social_feed' %}" class="btn btn-outline-info btn-lg">Share Your Progress</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stats-card {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #444;
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    border-color: #ff4444;
+    box-shadow: 0 4px 8px rgba(255, 68, 68, 0.2);
+    transform: translateY(-2px);
+}
+
+.insight-item {
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border-left: 4px solid #ff4444;
+}
+
+.goal-stat {
+    padding: 20px;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-shadow: 0 0 8px currentColor;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #ccc;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+</style>
+{% endblock %}

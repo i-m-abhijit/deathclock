@@ -1,0 +1,205 @@
+{% extends 'mortality/base.html' %}
+
+{% block title %}Anonymous Confessions - DeathClock{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center mb-4">😔 Anonymous Confessions</h1>
+        <p class="text-center lead mb-5">Share your deepest regrets about wasted time - completely anonymous</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Confession Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>💭 Share Your Confession</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <textarea name="confession" class="form-control" rows="4" 
+                                  placeholder="What do you regret about how you've spent your time? What are you avoiding? What would you do differently if you could start over? Share anonymously..." required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-warning">Share Anonymous Confession</button>
+                    </div>
+                </form>
+                <small class="text-muted mt-2 d-block">
+                    🔒 Completely anonymous - no one will know this came from you
+                </small>
+            </div>
+        </div>
+
+        <!-- Confessions Feed -->
+        {% for confession in confessions %}
+        <div class="card mb-3 confession-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h6 class="card-title text-muted">
+                            <span class="anonymous-badge">Anonymous Soul</span>
+                        </h6>
+                        <small class="text-muted">{{ confession.created_at|timesince }} ago</small>
+                    </div>
+                    <span class="badge bg-warning">Confession</span>
+                </div>
+                
+                <div class="confession-content">
+                    <p class="card-text">{{ confession.content|linebreaks }}</p>
+                </div>
+                
+                <div class="confession-footer">
+                    <small class="text-muted">
+                        💀 "The unexamined life is not worth living" - Socrates
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="card">
+            <div class="card-body text-center">
+                <h5>No confessions yet</h5>
+                <p class="text-muted">Be the first to share your anonymous confession about wasted time and regrets.</p>
+                <p class="text-warning">Sometimes the truth hurts, but it's the first step to change.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Confession Guidelines -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6>📝 Confession Guidelines</h6>
+            </div>
+            <div class="card-body">
+                <h6 class="text-warning">What to Share:</h6>
+                <ul class="list-unstyled small mb-3">
+                    <li>• Time you wish you could get back</li>
+                    <li>• Opportunities you missed due to fear</li>
+                    <li>• Relationships you've neglected</li>
+                    <li>• Dreams you've abandoned</li>
+                    <li>• Habits that are stealing your life</li>
+                    <li>• Things you're avoiding</li>
+                </ul>
+                
+                <h6 class="text-info">Remember:</h6>
+                <ul class="list-unstyled small">
+                    <li>• Completely anonymous</li>
+                    <li>• No judgment here</li>
+                    <li>• Honesty helps healing</li>
+                    <li>• Others share your struggles</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mortality Reminders -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6>💀 Mortality Reminders</h6>
+            </div>
+            <div class="card-body">
+                <div class="reminder-item mb-3">
+                    <p class="small mb-1"><strong>"The trouble is, you think you have time."</strong></p>
+                    <p class="small text-muted">- Buddha</p>
+                </div>
+                
+                <div class="reminder-item mb-3">
+                    <p class="small mb-1"><strong>"It is not death that a man should fear, but never beginning to live."</strong></p>
+                    <p class="small text-muted">- Marcus Aurelius</p>
+                </div>
+                
+                <div class="reminder-item">
+                    <p class="small mb-1"><strong>"Time is the most valuable thing we have, because it is the most irrevocable."</strong></p>
+                    <p class="small text-muted">- Dietrich Bonhoeffer</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Common Confessions -->
+        <div class="card">
+            <div class="card-header">
+                <h6>😔 Common Regrets</h6>
+            </div>
+            <div class="card-body">
+                <div class="small">
+                    <p class="mb-2"><strong>Most people confess:</strong></p>
+                    <ul class="list-unstyled">
+                        <li>• Spending years on social media</li>
+                        <li>• Not pursuing their dreams</li>
+                        <li>• Staying in toxic relationships</li>
+                        <li>• Working jobs they hate</li>
+                        <li>• Not telling people they love them</li>
+                        <li>• Procrastinating on important goals</li>
+                        <li>• Wasting time on meaningless entertainment</li>
+                    </ul>
+                    <p class="text-warning mt-3"><strong>What's your confession?</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.confession-card {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #444;
+    transition: all 0.3s ease;
+}
+
+.confession-card:hover {
+    border-color: #ffc107;
+    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
+}
+
+.anonymous-badge {
+    background: rgba(255, 193, 7, 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: #ffc107;
+}
+
+.confession-content {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+    margin: 15px 0;
+}
+
+.confession-footer {
+    text-align: center;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reminder-item {
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    border-left: 3px solid #ff4444;
+}
+
+.form-control {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid #444 !important;
+    color: #e0e0e0 !important;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: #ffc107 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25) !important;
+}
+
+.form-control::placeholder {
+    color: #999 !important;
+}
+</style>
+{% endblock %}

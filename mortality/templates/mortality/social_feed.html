@@ -1,0 +1,167 @@
+{% extends 'mortality/base.html' %}
+
+{% block title %}Mortality Social Network - DeathClock{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center mb-4">💀 Mortality Social Network</h1>
+        <p class="text-center lead mb-5">Connect with others confronting their mortality</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Main Feed -->
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>📝 Share Your Mortality Journey</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Posting as: <strong class="text-info">{{ anonymous_username }}</strong> (Anonymous)</p>
+                <a href="{% url 'create_post' %}" class="btn btn-danger btn-sm">Share Reflection</a>
+                <a href="{% url 'anonymous_confessions' %}" class="btn btn-warning btn-sm">Anonymous Confession</a>
+            </div>
+        </div>
+
+        <!-- Posts Feed -->
+        {% for post in posts %}
+        <div class="card mb-3 social-post">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h6 class="card-title">
+                            {% if post.is_anonymous %}
+                                <span class="text-muted">Anonymous Soul</span>
+                            {% else %}
+                                <span class="text-info">{{ post.user.userprofile.generate_anonymous_username }}</span>
+                            {% endif %}
+                            <span class="badge bg-secondary ms-2">{{ post.get_post_type_display }}</span>
+                        </h6>
+                        <small class="text-muted">{{ post.created_at|timesince }} ago</small>
+                    </div>
+                </div>
+                
+                <h5 class="card-subtitle mb-2">{{ post.title }}</h5>
+                <p class="card-text">{{ post.content|linebreaks }}</p>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <button class="btn btn-sm btn-outline-danger like-btn" data-post-id="{{ post.id }}">
+                            💀 {{ post.likes.count }} Souls
+                        </button>
+                        <small class="text-muted ms-2">{{ post.comments.count }} Comments</small>
+                    </div>
+                    <small class="text-muted">
+                        {% if post.post_type == 'reflection' %}🤔 Reflection
+                        {% elif post.post_type == 'confession' %}😔 Confession
+                        {% elif post.post_type == 'achievement' %}🎯 Achievement
+                        {% elif post.post_type == 'milestone' %}🏆 Milestone
+                        {% else %}⚡ Wake Up Call{% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="card">
+            <div class="card-body text-center">
+                <h5>No posts yet</h5>
+                <p class="text-muted">Be the first to share your mortality journey!</p>
+                <a href="{% url 'create_post' %}" class="btn btn-danger">Share Your Story</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Active Challenges -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6>🎯 Active Challenges</h6>
+            </div>
+            <div class="card-body">
+                {% for challenge in active_challenges %}
+                <div class="mb-3 p-2" style="background: rgba(255, 255, 255, 0.05); border-radius: 5px;">
+                    <h6 class="mb-1">{{ challenge.title }}</h6>
+                    <p class="mb-1 small">{{ challenge.description|truncatechars:80 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">{{ challenge.duration_days }} days</small>
+                        <a href="{% url 'join_challenge' challenge.id %}" class="btn btn-sm btn-outline-warning">Join</a>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No active challenges</p>
+                {% endfor %}
+                <a href="{% url 'mortality_challenges' %}" class="btn btn-sm btn-info w-100 mt-2">View All Challenges</a>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6>📊 Community Stats</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="mb-2">
+                        <div class="mortality-stat" style="font-size: 1.5rem;">{{ posts|length }}</div>
+                        <small class="text-muted">Recent Posts</small>
+                    </div>
+                    <div class="mb-2">
+                        <div class="mortality-stat" style="font-size: 1.5rem;">{{ active_challenges|length }}</div>
+                        <small class="text-muted">Active Challenges</small>
+                    </div>
+                </div>
+                <a href="{% url 'mortality_stats' %}" class="btn btn-sm btn-outline-info w-100 mt-2">Full Stats</a>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="card">
+            <div class="card-header">
+                <h6>🔗 Explore</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'mortality_leaderboard' %}" class="btn btn-sm btn-outline-success">🏆 Leaderboard</a>
+                    <a href="{% url 'anonymous_confessions' %}" class="btn btn-sm btn-outline-warning">😔 Confessions</a>
+                    <a href="{% url 'mortality_challenges' %}" class="btn btn-sm btn-outline-info">🎯 Challenges</a>
+                    <a href="{% url 'mortality_stats' %}" class="btn btn-sm btn-outline-secondary">📊 Stats</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.social-post {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #333;
+    transition: all 0.3s ease;
+}
+
+.social-post:hover {
+    border-color: #ff4444;
+    box-shadow: 0 4px 8px rgba(255, 68, 68, 0.2);
+}
+
+.like-btn:hover {
+    background-color: #ff4444;
+    border-color: #ff4444;
+    color: white;
+}
+</style>
+
+<script>
+// Like button functionality
+document.querySelectorAll('.like-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const postId = this.dataset.postId;
+        // Add AJAX call to like/unlike post
+        this.classList.toggle('btn-outline-danger');
+        this.classList.toggle('btn-danger');
+    });
+});
+</script>
+{% endblock %}

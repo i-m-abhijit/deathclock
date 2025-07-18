@@ -1,0 +1,214 @@
+{% extends 'mortality/base.html' %}
+
+{% block title %}Mortality Challenges - DeathClock{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center mb-4">🎯 Mortality Challenges</h1>
+        <p class="text-center lead mb-5">Challenge yourself to make the most of your remaining time</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Active Challenges -->
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>🔥 Active Challenges</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for challenge in active_challenges %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card challenge-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title">{{ challenge.title }}</h6>
+                                    <span class="badge bg-info">{{ challenge.get_challenge_type_display }}</span>
+                                </div>
+                                
+                                <p class="card-text">{{ challenge.description }}</p>
+                                
+                                <div class="challenge-details mb-3">
+                                    <div class="row text-center">
+                                        <div class="col-4">
+                                            <div class="challenge-stat">{{ challenge.duration_days }}</div>
+                                            <small class="text-muted">Days</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="challenge-stat">{{ challenge.points_reward }}</div>
+                                            <small class="text-muted">Points</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="challenge-stat">{{ challenge.challengeparticipant_set.count }}</div>
+                                            <small class="text-muted">Joined</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {% with user_joined=False %}
+                                    {% for user_challenge in user_challenges %}
+                                        {% if user_challenge.challenge.id == challenge.id %}
+                                            {% with user_joined=True %}{% endwith %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if user_joined %}
+                                        <button class="btn btn-success btn-sm w-100" disabled>
+                                            ✅ Already Joined
+                                        </button>
+                                    {% else %}
+                                        <a href="{% url 'join_challenge' challenge.id %}" class="btn btn-danger btn-sm w-100">
+                                            Join Challenge
+                                        </a>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="text-center">
+                            <h5>No active challenges</h5>
+                            <p class="text-muted">Check back soon for new mortality challenges!</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Your Challenges -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6>🏃 Your Active Challenges</h6>
+            </div>
+            <div class="card-body">
+                {% for participation in user_challenges %}
+                <div class="mb-3 p-2" style="background: rgba(255, 255, 255, 0.05); border-radius: 5px;">
+                    <h6 class="mb-1">{{ participation.challenge.title }}</h6>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ participation.progress_percentage }}%;">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">{{ participation.progress_percentage }}% Complete</small>
+                        {% if participation.completed %}
+                            <small class="text-success">✅ Completed</small>
+                        {% else %}
+                            <small class="text-warning">⏳ In Progress</small>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No active challenges. Join one to start improving your life!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Challenge Categories -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6>📋 Challenge Categories</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-sm btn-outline-danger filter-btn" data-type="time_waste">
+                        ⏰ Reduce Time Waste
+                    </button>
+                    <button class="btn btn-sm btn-outline-success filter-btn" data-type="productivity">
+                        🎯 Increase Productivity
+                    </button>
+                    <button class="btn btn-sm btn-outline-info filter-btn" data-type="health">
+                        💪 Improve Health
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning filter-btn" data-type="relationships">
+                        ❤️ Strengthen Relationships
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary filter-btn" data-type="learning">
+                        📚 Learn Something New
+                    </button>
+                    <button class="btn btn-sm btn-secondary filter-btn" data-type="all">
+                        🔄 Show All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motivation -->
+        <div class="card">
+            <div class="card-header">
+                <h6>💀 Mortality Motivation</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <p class="mb-2"><strong>Time is running out.</strong></p>
+                    <p class="small text-muted">Every challenge you complete is time reclaimed from the void. Every day you procrastinate is a day closer to your last.</p>
+                    <p class="small text-warning">What are you waiting for?</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.challenge-card {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #333;
+    transition: all 0.3s ease;
+}
+
+.challenge-card:hover {
+    border-color: #ff4444;
+    box-shadow: 0 4px 8px rgba(255, 68, 68, 0.2);
+    transform: translateY(-2px);
+}
+
+.challenge-stat {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff4444;
+}
+
+.filter-btn.active {
+    background-color: #ff4444;
+    border-color: #ff4444;
+    color: white;
+}
+</style>
+
+<script>
+// Challenge filtering
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const filterType = this.dataset.type;
+        
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Filter challenges
+        document.querySelectorAll('.challenge-card').forEach(card => {
+            const cardParent = card.closest('.col-md-6');
+            if (filterType === 'all') {
+                cardParent.style.display = 'block';
+            } else {
+                const badge = card.querySelector('.badge');
+                const challengeType = badge.textContent.toLowerCase();
+                
+                if (challengeType.includes(filterType.replace('_', ' '))) {
+                    cardParent.style.display = 'block';
+                } else {
+                    cardParent.style.display = 'none';
+                }
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
