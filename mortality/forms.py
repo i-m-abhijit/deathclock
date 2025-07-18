@@ -41,7 +41,7 @@ class UserProfileForm(forms.ModelForm):
             'social_connections': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
         labels = {
-            'birth_date': 'When did your countdown begin?',
+            'birth_date': 'When did your countdown begin? (Birth Date)',
             'gender': 'Gender',
             'country': 'Country of residence',
             'smoking_status': 'Smoking habits',
